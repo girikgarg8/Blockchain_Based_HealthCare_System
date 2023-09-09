@@ -3,14 +3,14 @@ version: "2.1"
 services:
   settings-tp:
     image: hyperledger/sawtooth-settings-tp:1.0
-    container_name: sawtooth-settings-tp-default
+    container_name: sawtooth-settings-tp-default-healthcare
     depends_on:
       - validator
     entrypoint: settings-tp -vv -C tcp://validator:4004
 
   validator:
     image: hyperledger/sawtooth-validator:1.0
-    container_name: sawtooth-validator-default
+    container_name: sawtooth-validator-default-healthcare
     expose:
       - 4004
     ports:
@@ -29,7 +29,7 @@ services:
 
   rest-api:
     image: hyperledger/sawtooth-rest-api:1.0
-    container_name: sawtooth-rest-api-default
+    container_name: sawtooth-rest-api-default-healthcare
     ports:
       - "8008:8008"
     depends_on:

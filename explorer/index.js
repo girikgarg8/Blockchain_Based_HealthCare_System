@@ -16,12 +16,13 @@ instance
     })
     .then(response => {
         let data = lget(response, 'data.data');
-        console.log('\nPARTIES\n=================\n');
+        console.log('\Global nodes \n=================\n');
         for (party of data) {
             const partyData = party.data;
             const buf = Buffer.from(partyData, 'base64');
             console.log(buf.toString());
         }
+        console.log('\n ')
     });
 
 instance
@@ -32,12 +33,13 @@ instance
     })
     .then(response => {
         let data = lget(response, 'data.data');
-        console.log('\nVoters\n=================\n');
+        console.log('\nLocal nodes \n=================\n');
         for (party of data) {
             const partyData = party.data;
             const buf = Buffer.from(partyData, 'base64');
             console.log(buf.toString());
         }
+        console.log('\n ');
     });
 
 instance
@@ -48,10 +50,11 @@ instance
     })
     .then(response => {
         let data = lget(response, 'data.data');
-        console.log('\nVotes\n=================\n');
+        console.log('\n Payloads sent to global nodes \n=================\n');
         for (party of data) {
             const partyData = party.data;
             const buf = Buffer.from(partyData, 'base64');
             console.log(buf.toString());
         }
+        console.log('\n ')
     });

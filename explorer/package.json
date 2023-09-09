@@ -7,7 +7,7 @@
         "test": "echo \"Error: no test specified\" && exit 1",
         "explorer": "node index.js"
     },
-    "author": "Shripada <shripada.hebbar@hp.com> (hp.com)",
+    "author": "Girik Garg",
     "license": "ISC",
     "dependencies": {
         "axios": "^0.19.0",

@@ -1,76 +1,76 @@
 const { TransactionHandler } = require('sawtooth-sdk/processor/handler');
 const { InvalidTransaction } = require('sawtooth-sdk/processor/exceptions');
 const cbor = require('cbor');
-const PartyStore = require('./PartyStore');
-const VoterStore = require('./VoterStore');
-const VoteStore = require('./VoteStore');
+const GlobalNodeStore = require('./GlobalNodeStore');
+const PayloadStore = require('./PayloadStore');
+const LocalNodeStore = require('./LocalNodeStore');
 
 var { TP_FAMILY, TP_NAMESPACE } = require('./constants');
 
-class VotingSystemHandler extends TransactionHandler {
+class HealthCareSystemHandler extends TransactionHandler {
     constructor() {
         super(TP_FAMILY, ['1.0'], [TP_NAMESPACE]);
     }
 
-    async handleAddPartyTransaction(context, payload) {
-        const partyStore = new PartyStore(context);
-        const partyExists = await partyStore.partyExists(payload.partyId);
-        if (partyExists) {
-            throw new InvalidTransaction(`Party  ${payload.partyId} already exists!`);
+    async handleAddGlobalNodeTransaction(context, payload) {
+        const globalNodeStore = new GlobalNodeStore(context);
+        const globalNodeExists = await globalNodeStore.globalNodeExists(payload.globalNodeId);
+        if (globalNodeExists) {
+            throw new InvalidTransaction(`Global Node  ${payload.globalNodeId} already exists!`);
         } else {
-            return await partyStore.addParty(payload);
+            return await globalNodeStore.addGlobalNode(payload);
         }
     }
 
-    async handleAddVoterTransaction(context, payload) {
-        const voterStore = new VoterStore(context);
-        const voterExists = await voterStore.voterExists(payload.voterId);
-        if (voterExists) {
-            throw new InvalidTransaction(`Voter  with id: ${payload.voterId} already exists!`);
+    async handleAddLocalNodeTransaction(context, payload) {
+        const localNodeStore = new LocalNodeStore(context);
+        const localNodeExists = await localNodeStore.localNodeExists(payload.localNodeId);
+        if (localNodeExists) {
+            throw new InvalidTransaction(`Local Node with id: ${payload.localNodeId} already exists!`);
         } else {
-            return await voterStore.addVoter(payload);
+            return await localNodeStore.addLocalNode(payload);
         }
     }
 
-    async handleAddVoteTransaction(context, payload) {
-        const voteStore = new VoteStore(context);
+    async handleAddTransaction(context, payload) {
+        const payloadStore = new PayloadStore(context);
 
-        const voteExists = await voteStore.voteExists(payload.voterId);
-        if (voteExists) {
-            throw new InvalidTransaction(`Voter  with id: ${payload.voterId} has already voted!`);
+        const payloadByLocalNodeExists = await payloadStore.payloadExists(payload.localNodeId);
+        if (payloadByLocalNodeExists) { //can be removed later
+            throw new InvalidTransaction(`Local node  with id: ${payload.localNodeId} has already sent a payload!`);
         } else {
-            const voterStore = new VoterStore(context);
-            const voterExists = await voterStore.voterExists(payload.voterId);
-            if (!voterExists) {
-                throw new InvalidTransaction(`Voter  ${payload.voterId}' is not in records, rejecting the vote!`);
+            const localNodeStore = new LocalNodeStore(context);
+            const localNodeStoreExists = await localNodeStore.localNodeExists(payload.localNodeId);
+            if (!localNodeStoreExists) {
+                throw new InvalidTransaction(`Local Node ${payload.localNodeId}' is not in records, rejecting the payload sent !!`);
             }
 
-            await voteStore.addVote(payload);
-            const partyStore = new PartyStore(context);
-            const partyExists = await partyStore.partyExists(payload.partyId);
-            if (!partyExists) {
-                throw new InvalidTransaction(`Party  ${payload.partyId}' is not in records, rejecting the vote!`);
+            await payloadStore.addPayload(payload);
+            const globalNode = new GlobalNodeStore(context);
+            const globalNodeExists = await globalNode.globalNodeExists(payload.globalNodeId);
+            if (!globalNodeExists) {
+                throw new InvalidTransaction(`Global Node ${payload.globalNodeId}' is not in records, rejecting the payload sent !! `);
             }
-            await partyStore.addVoteToParty(payload.partyId);
-            return await voterStore.addVoter({ voterId: payload.voterId, voted: true });
+            // await payloadStore.addVoteToParty(payload.partyId); not needed
+            return await localNodeStore.addLocalNode({ localNodeId: payload.localNodeId, sentPayload: true });
         }
     }
 
     async apply(transactionProcessRequest, context) {
         let payload = cbor.decode(transactionProcessRequest.payload);
         switch (payload.action) {
-            case 'addParty':
-                return await this.handleAddPartyTransaction(context, payload);
-            case 'addVoter':
-                return await this.handleAddVoterTransaction(context, payload);
-            case 'addVote':
-                return await this.handleAddVoteTransaction(context, payload);
+            case 'addGlobalNode':
+                return await this.handleAddGlobalNodeTransaction(context, payload);
+            case 'addLocalNode':
+                return await this.handleAddLocalNodeTransaction(context, payload);
+            case 'addPayload':
+                return await this.handleAddTransaction(context, payload);
             default:
                 throw new InvalidTransaction(
-                    `Action must be add voter, add party,  add vote, and not ${payload.action}`
+                    `Action must be add local node, add global node, add payload, and not ${payload.action}`
                 );
         }
     }
 }
 
-module.exports = VotingSystemHandler;
+module.exports = HealthCareSystemHandler;
