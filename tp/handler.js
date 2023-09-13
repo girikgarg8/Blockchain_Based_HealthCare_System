@@ -1,6 +1,6 @@
 const { TransactionHandler } = require('sawtooth-sdk/processor/handler');
 const { InvalidTransaction } = require('sawtooth-sdk/processor/exceptions');
-const cbor = require('cbor');
+const cbor = require('borc');
 const GlobalNodeStore = require('./GlobalNodeStore');
 const PayloadStore = require('./PayloadStore');
 const LocalNodeStore = require('./LocalNodeStore');
@@ -35,8 +35,8 @@ class HealthCareSystemHandler extends TransactionHandler {
     async handleAddTransaction(context, payload) {
         const payloadStore = new PayloadStore(context);
 
-        const payloadByLocalNodeExists = await payloadStore.payloadExists(payload.localNodeId);
-        if (payloadByLocalNodeExists) { //can be removed later
+        const payloadByLocalNodeExists = false; //can be removed or changed later, as per use case
+        if (payloadByLocalNodeExists) {
             throw new InvalidTransaction(`Local node  with id: ${payload.localNodeId} has already sent a payload!`);
         } else {
             const localNodeStore = new LocalNodeStore(context);

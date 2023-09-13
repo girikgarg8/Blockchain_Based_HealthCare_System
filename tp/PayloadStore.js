@@ -12,8 +12,9 @@ class PayloadStore {
         let address = payloadAddress(payloadObj.localNodeId);
         let payloadObject = {};
         payloadObject.localNodeId = payloadObj.localNodeId;
-        payloadObject.globalNodeId = payloadObj.partyId;
+        payloadObject.globalNodeId = payloadObj.globalNodeId;
         payloadObject.payloadMessage= payloadObj.payloadMessage;
+        payloadObject.testAccuracy= payloadObj.testAccuracy;
         let data = Buffer.from(serialise(payloadObj));
         return await this.context.setState({ [address]: data }, this.timeout);
     }
