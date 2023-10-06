@@ -55,6 +55,7 @@ instance
             const partyData = party.data;
             const buf = Buffer.from(partyData, 'base64');
             console.log(buf.toString());
+            console.log("\n \n");
         }
         console.log('\n ')
     });

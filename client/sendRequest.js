@@ -1,6 +1,6 @@
 const { createContext, CryptoFactory } = require('sawtooth-sdk/signing');
 const { createHash } = require('crypto');
-const cbor = require('cbor');
+const cbor = require('borc');
 const { protobuf } = require('sawtooth-sdk');
 const request = require('request');
 
@@ -61,14 +61,14 @@ function sendRequest(payload) {
             let body = JSON.parse(response.body);
             setTimeout(() => {
                 request(body.link, (error, response, body) => {
-                    console.log(body);
+                    console.log(body +'\n');
                 });
             }, 0);
             setTimeout(() => {
                 request(body.link, (error, response, body) => {
                     console.log(body);
                 });
-            }, 3000);
+            }, 5000);
         }
     );
 }
