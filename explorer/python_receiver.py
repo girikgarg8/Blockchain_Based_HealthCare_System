@@ -75,6 +75,8 @@ try:
     layers=6
     numModels=len(accuracies)
 
+    epochs = 30
+    batch_size = 10
     for i in range(numModels):
         for j in range(layers):
             lists[i][j]=lists[i][j]*accuracies[i]
@@ -136,6 +138,8 @@ try:
     model.compile(loss='categorical_crossentropy', optimizer=RMSprop(), metrics=['accuracy'])
     model.set_weights(new_set_of_weights)
 
+    history = model.fit(X_train, y_train__, batch_size=batch_size, epochs=epochs,
+                    validation_data=(X_test, y_test__))
 
     # prediction on train and test data
     y_train_pred = np.array([np.argmax(row)+1 for row in model.predict(X_train, verbose = 0)])

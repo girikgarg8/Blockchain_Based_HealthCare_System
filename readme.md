@@ -162,3 +162,5 @@ PARTIES
 {"partyId":"B","votes":0}
 ```
 
+
+npx caliper launch master --caliper-bind-sut sawtooth:1.0.5 --caliper-workspace . --caliper-benchconfig benchmarks/scenario/simple/config-sawtooth.yaml --caliper-networkconfig networks/sawtooth/simplenetwork/sawtooth.json
